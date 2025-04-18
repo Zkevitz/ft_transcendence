@@ -1,0 +1,29 @@
+{
+  "name": "ft-transcendence-frontend",
+  "version": "1.0.0",
+  "description": "Frontend pour le projet ft_transcendence",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --skipLibCheck && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "pong",
+    "typescript",
+    "tailwindcss",
+    "vite"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.1.3"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.19",
+    "tailwindcss": "^3.2.4",
+    "typescript": "^4.9.3",
+    "vite": "^3.2.11"
+  }
+}

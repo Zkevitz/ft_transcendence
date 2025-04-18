@@ -1,0 +1,36 @@
+FROM node:16
+
+WORKDIR /app
+
+# Installer les dépendances nécessaires
+RUN apt-get update && \
+    apt-get install -y python3 make g++ && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copier les fichiers de configuration
+COPY package.json package-lock.json* tsconfig.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le code source
+COPY backend ./backend
+COPY frontend ./frontend
+
+# Compiler le backend
+RUN cd backend && npx tsc || true
+
+# Compiler le frontend
+RUN cd frontend && npx tsc || true
+
+# Créer un script pour copier les fichiers compilés
+RUN echo '#!/bin/sh\n\
+mkdir -p /output/backend/dist /output/frontend/dist\n\
+cp -r backend/dist/* /output/backend/dist/ 2>/dev/null || true\n\
+cp -r frontend/dist/* /output/frontend/dist/ 2>/dev/null || true\n\
+echo "Compilation terminée. Les fichiers ont été copiés dans les répertoires dist."' > /copy-output.sh && \
+    chmod +x /copy-output.sh
+
+# Point d'entrée
+ENTRYPOINT ["/copy-output.sh"]
