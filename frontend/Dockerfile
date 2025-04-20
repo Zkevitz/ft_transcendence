@@ -1,53 +1,46 @@
 # Dockerfile pour le frontend
-# 
-# Ce fichier définit les étapes pour construire l'image Docker du frontend.
-# Il utilise une approche multi-stage pour optimiser la taille de l'image finale.
+# Multi-stage build pour optimiser la taille de l'image
 
 # Étape de build
-FROM node:16 AS build
+FROM node:18 AS build
 
-# Répertoire de travail
 WORKDIR /app
 
-# Copie des fichiers de dépendances
+# Copie des fichiers de dépendances et sources
 COPY package.json ./
+COPY package-lock.json ./
+COPY tsconfig.json ./
+COPY vite.config.* ./
+COPY tailwind.config.* ./
+COPY postcss.config.* ./
+COPY index.html ./
+COPY src ./src
+COPY src/styles ./src/styles
 
 # Installation des dépendances
 RUN npm install
 
-# Copie du code source
-COPY . .
-
-# Création du répertoire dist et copie du fichier HTML statique
-RUN mkdir -p dist && \
-    cp static-index.html dist/index.html
+# Build Vite (génère le dossier dist)
+RUN npm run build
 
 # Étape de production
-FROM nginx:alpine
+FROM node:18 AS prod
 
-# Création d'une configuration Nginx par défaut
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html; \
-        try_files $uri $uri/ /index.html; \
-    } \
-    location /api { \
-        proxy_pass http://backend:3000; \
-        proxy_http_version 1.1; \
-        proxy_set_header Upgrade $http_upgrade; \
-        proxy_set_header Connection "upgrade"; \
-        proxy_set_header Host $host; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copie des fichiers de build depuis l'étape précédente
-COPY --from=build /app/dist /usr/share/nginx/html
+# Installer uniquement les dépendances nécessaires à l'exécution
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --omit=dev
 
-# Exposition du port
-EXPOSE 80
+# Copier les fichiers générés
+COPY --from=build /app/dist ./dist
+COPY server.js ./server.js
+COPY server.crt ./server.crt
+COPY server.key ./server.key
+
+# Exposer le port utilisé par Fastify
+EXPOSE 3000
 
 # Commande de démarrage
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "server.js"]

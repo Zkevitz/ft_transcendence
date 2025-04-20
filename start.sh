@@ -64,6 +64,9 @@ if [ ! -d "docker/ssl" ] || [ ! -f "docker/ssl/server.crt" ] || [ ! -f "docker/s
     info "Certificats SSL générés avec succès dans le répertoire docker/ssl/"
 fi
 
+sudo chown -R $USER:$USER /home/zkevitz/Documents/git_trans_home/frontend/dist
+chmod -R u+w /home/zkevitz/Documents/git_trans_home/frontend/dist
+
 # Arrêt des conteneurs existants
 info "Arrêt des conteneurs existants..."
 docker-compose down

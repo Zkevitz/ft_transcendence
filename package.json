@@ -7,6 +7,7 @@
     "build": "tsc",
     "build:backend": "cd backend && tsc",
     "build:frontend": "cd frontend && tsc",
+    "build:css": "cd frontend && tailwindcss -i ./src/styles/main.css -o ./dist/styles/main.css --minify",
     "start": "node dist/backend/src/index.js",
     "dev": "nodemon --exec ts-node backend/src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",

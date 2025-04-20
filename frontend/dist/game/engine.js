@@ -36,7 +36,7 @@ export function createGameState(width, height) {
             width: ballSize,
             height: ballSize,
             speed: 5,
-            dx: Math.random() > 0.5 ? 1 : -1, // Direction aléatoire au départ
+            dx: Math.random() > 0.5 ? 1 : -1,
             dy: Math.random() > 0.5 ? 1 : -1 // Direction aléatoire au départ
         },
         leftPaddle: {

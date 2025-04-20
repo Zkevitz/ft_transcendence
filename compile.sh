@@ -11,6 +11,8 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
+sudo chown -R $USER:$USER backend/dist frontend/dist
+
 # Nettoyer les anciennes compilations si elles existent
 echo "Nettoyage des anciennes compilations..."
 rm -rf backend/dist frontend/dist
@@ -26,6 +28,9 @@ docker build -t ft_trans_build -f docker/Dockerfile.build .
 # Exécuter le conteneur pour copier les fichiers compilés
 echo "Exécution du conteneur de compilation..."
 docker run --rm -v "$(pwd)/backend/dist:/output/backend/dist" -v "$(pwd)/frontend/dist:/output/frontend/dist" ft_trans_build
+
+mkdir -p frontend/dist/styles
+cp -r frontend/src/styles/*.css frontend/dist/styles/
 
 # Vérifier si les fichiers de compilation existent
 if [ -d "backend/dist" ] && [ "$(find backend/dist -type f 2>/dev/null | wc -l)" -gt 0 ]; then

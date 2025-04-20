@@ -68,8 +68,8 @@ export function renderGamePage(container) {
         stopGameBtn.disabled = true;
     });
     // Nettoyage lors du changement de page
-    return function cleanup() {
-        stopGame();
-    };
+    // Si besoin d'une fonction de nettoyage, il faut changer la signature de renderGamePage
+    // ou appeler stopGame() ailleurs. Ici, on ne retourne rien.
+    // stopGame(); // <-- Appeler ici si tu veux arrêter le jeu immédiatement
 }
 //# sourceMappingURL=game.js.map

@@ -9,6 +9,7 @@
  */
 
 // Import des styles
+console.log("bonjour")
 import './styles/main.css';
 
 // Import des modules et composants
