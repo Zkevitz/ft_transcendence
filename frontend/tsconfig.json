@@ -1,3 +1,16 @@
+/*Fichier de configuration TypeScript,
+
+->Permet de Definir comment le compilateur TypeScript(tsc) 
+doit traiter les fichiers sources vers le code JavaScript.
+
+-"include" : liste des fichiers sources à compiler
+-"exclude" : liste des fichiers sources à ne pas compiler
+-"outdir" : répertoire de sortie du code JavaScript compilé
+-"rootdir" : répertoire de départ des fichiers sources
+
+globalement permet de définir les options de compilation
+*/
+
 {
   "compilerOptions": {
     "target": "ES2020",

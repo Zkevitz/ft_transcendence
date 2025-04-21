@@ -13,6 +13,8 @@ WORKDIR /app
 COPY package.json ./
 
 # Installation des dépendances et de ts-node
+#->npm install : installe les dépendances définies dans package.json
+# et créé le fichier package-lock.json et le dossier node_modules
 RUN npm install && \
     npm install -g ts-node && \
     npm install -D @types/node @types/ws

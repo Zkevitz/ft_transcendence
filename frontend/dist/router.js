@@ -13,6 +13,7 @@
 // Définition des routes de l'application
 const routes = [
     { path: '/', component: 'home' },
+    { path: '/api', component: 'api' },
     { path: '/game', component: 'game' },
     { path: '/tournaments', component: 'tournaments' },
     { path: '/profile', component: 'profile' },

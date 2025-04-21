@@ -1,3 +1,9 @@
+/*Fichier de configuration de tailwind CSS, permet de 
+personnaliser le framwork 
+Content : permet de dire à tailwind où il doit chercher les classes CSS
+
+Extend : permet d'ajouter des classes CSS personnalisées sans ecraser les classes par défaut
+        Exemple: extend: color ou extend: fontFamily*/
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [

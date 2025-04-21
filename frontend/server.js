@@ -1,3 +1,7 @@
+/*Fichier JavaScript lancer au demarrage du docker frontend
+
+Celui-ci initialise le Framework fastify, enregistre les clefs et lance
+le serveur*/
 const fs = require('fs');
 const path = require('path');
 const httpsOptions = {
@@ -23,10 +27,11 @@ fastify.setNotFoundHandler((request, reply) => {
   if (!path.extname(request.raw.url)) {
     reply.type('text/html').sendFile('index.html');
   } else {
-    reply.code(404).send('Not found');
+    reply.code(404).send('Not found from Frontend');
   }
 });
 
+//Port notifier dans le 'environnement' ou 3000 par défaut
 const PORT = process.env.PORT || 3000;
 
 // Start Fastify on all interfaces for Docker compatibility
