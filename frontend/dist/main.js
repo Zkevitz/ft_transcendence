@@ -42,6 +42,7 @@ async function initApp() {
               <li><a href="/game" class="hover:text-primary-200">Jouer</a></li>
               <li><a href="/tournaments" class="hover:text-primary-200">Tournois</a></li>
               <li><a href="/profile" class="hover:text-primary-200">Profil</a></li>
+              <li><a href="/register" class="hover:text-primary-200">S'inscrire</a></li>
             </ul>
           </nav>
           <button id="login-btn" class="btn-secondary">Connexion</button>
@@ -67,10 +68,19 @@ async function initApp() {
     `;
         // Ajout des écouteurs d'événements
         document.getElementById('play-btn')?.addEventListener('click', () => {
+            console.log('Play button clicked, redirecting to /game');
             window.location.href = '/game';
         });
         document.getElementById('login-btn')?.addEventListener('click', () => {
-            window.location.href = '/login';
+            console.log('Login button clicked, redirecting to /login');
+            // Utilisation de app.navigate au lieu de window.location.href
+            // pour s'assurer que le routeur SPA est utilisé
+            if (typeof app.navigate === 'function') {
+                app.navigate('/login');
+            }
+            else {
+                window.location.href = '/login';
+            }
         });
         console.log('Application initialisée avec succès');
     }

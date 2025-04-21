@@ -20,6 +20,9 @@ async function registerPlugins() {
     // CORS pour permettre les requêtes cross-origin
     await server.register(cors_1.default, {
         origin: true, // Autorise toutes les origines en développement
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization']
     });
     // WebSocket pour les communications en temps réel
     await server.register(websocket_1.default);
@@ -30,18 +33,21 @@ async function registerPlugins() {
 }
 // Enregistrement des routes
 async function registerRoutes() {
+    // Import des routes
+    const routes = require('./routes').default;
+    // Enregistrement des routes
+    await server.register(routes);
     // Enregistrement des routes avec le préfixe /api
     server.register(async (fastify) => {
         // Route de base pour tester l'API
         fastify.get('/', async (request, reply) => {
-            return { message: 'Bienvenue sur l\'API de ft_transcendence!' };
+            return { message: 'Bienvenue sur l\'API de ft_transcendence! Ceci est un test' };
         });
         // Route de santé pour vérifier que le serveur fonctionne
         fastify.get('/health', async (request, reply) => {
             return { status: 'ok' };
         });
     }, { prefix: '/api' });
-    // Ici, nous ajouterons plus tard d'autres routes pour les fonctionnalités du jeu
 }
 // Fonction principale pour démarrer le serveur
 async function start() {

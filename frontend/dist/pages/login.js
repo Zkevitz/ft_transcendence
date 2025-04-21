@@ -4,11 +4,74 @@
  * Cette page permet à l'utilisateur de se connecter à son compte.
  * Elle offre également la possibilité de se connecter via Google (OAuth).
  */
+// URL de l'API backend
+const API_URL = 'http://localhost:3000/api';
 /**
  * Affiche la page de connexion
  * @param container - Élément HTML dans lequel afficher la page
  */
 export function renderLoginPage(container) {
+    console.log('Rendering login page');
+    // Fonction pour gérer la connexion
+    async function handleLogin(email, password) {
+        console.log('handleLogin called with:', email);
+        try {
+            // Afficher un message de chargement
+            const statusDiv = document.getElementById('login-status');
+            if (statusDiv) {
+                statusDiv.textContent = 'Connexion en cours...';
+                statusDiv.classList.remove('hidden');
+                statusDiv.classList.remove('text-red-500');
+                statusDiv.classList.add('text-blue-500');
+            }
+            // Envoi de la requête de connexion à l'API
+            const response = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            });
+            // Traitement de la réponse
+            if (response.ok) {
+                const data = await response.json();
+                // Stockage du token dans le localStorage pour l'authentification
+                localStorage.setItem('auth_token', data.token);
+                localStorage.setItem('user_id', data.user.id.toString());
+                localStorage.setItem('username', data.user.username);
+                console.log('Connexion réussie:', data.user.username);
+                if (statusDiv) {
+                    statusDiv.textContent = 'Connexion réussie! Redirection...';
+                    statusDiv.classList.remove('text-red-500');
+                    statusDiv.classList.add('text-green-500');
+                }
+                // Redirection vers la page d'accueil après connexion réussie
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            }
+            else {
+                const errorData = await response.json();
+                if (statusDiv) {
+                    statusDiv.textContent = errorData.error || 'Erreur lors de la connexion';
+                    statusDiv.classList.remove('text-blue-500');
+                    statusDiv.classList.add('text-red-500');
+                }
+            }
+        }
+        catch (error) {
+            console.error('Erreur lors de la connexion:', error);
+            const statusDiv = document.getElementById('login-status');
+            if (statusDiv) {
+                statusDiv.textContent = 'Erreur de connexion au serveur';
+                statusDiv.classList.remove('text-blue-500');
+                statusDiv.classList.add('text-red-500');
+            }
+        }
+    }
     container.innerHTML = `
     <div class="container mx-auto py-8">
       <div class="max-w-md mx-auto card">
@@ -45,8 +108,10 @@ export function renderLoginPage(container) {
             </div>
           </div>
           
+          <div id="login-status" class="text-red-500 text-sm hidden"></div>
+          
           <div>
-            <button type="submit" class="w-full btn-primary">
+            <button type="button" id="login-button" class="w-full btn-primary">
               Se connecter
             </button>
           </div>
@@ -83,29 +148,62 @@ export function renderLoginPage(container) {
       </div>
     </div>
   `;
-    // Ajout des écouteurs d'événements
-    document.getElementById('login-form')?.addEventListener('submit', (event) => {
-        event.preventDefault();
-        // Récupération des valeurs du formulaire
+    // Ajout des écouteurs d'événements après le rendu du HTML
+    setTimeout(() => {
+        console.log('Setting up event listeners');
+        // Récupération des éléments du formulaire
+        const loginButton = document.getElementById('login-button');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
-        const email = emailInput.value;
-        const password = passwordInput.value;
-        // Validation basique côté client
-        if (!email || !password) {
-            alert('Veuillez remplir tous les champs');
-            return;
+        console.log('Login button:', loginButton);
+        console.log('Email input:', emailInput);
+        console.log('Password input:', passwordInput);
+        // Ajout de l'écouteur d'événement sur le bouton de connexion
+        if (loginButton) {
+            loginButton.onclick = function (event) {
+                event.preventDefault();
+                console.log('Login button clicked');
+                const email = emailInput?.value || '';
+                const password = passwordInput?.value || '';
+                console.log('Email:', email);
+                console.log('Password length:', password.length);
+                if (!email || !password) {
+                    const statusDiv = document.getElementById('login-status');
+                    if (statusDiv) {
+                        statusDiv.textContent = 'Veuillez remplir tous les champs';
+                        statusDiv.classList.remove('hidden');
+                    }
+                    return;
+                }
+                handleLogin(email, password);
+            };
         }
-        // Simulation de connexion (à remplacer par une vraie requête API)
-        console.log('Tentative de connexion avec:', { email, password });
-        // Redirection vers la page d'accueil après connexion réussie
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 1000);
-    });
-    document.getElementById('google-login-btn')?.addEventListener('click', () => {
-        // Simulation de connexion avec Google (à implémenter avec l'API Google)
-        alert('Connexion avec Google à implémenter');
-    });
+        // Ajout de l'écouteur d'événement sur le formulaire
+        const form = document.getElementById('login-form');
+        if (form) {
+            form.onsubmit = function (event) {
+                event.preventDefault();
+                console.log('Form submitted');
+                const email = emailInput?.value || '';
+                const password = passwordInput?.value || '';
+                if (!email || !password) {
+                    const statusDiv = document.getElementById('login-status');
+                    if (statusDiv) {
+                        statusDiv.textContent = 'Veuillez remplir tous les champs';
+                        statusDiv.classList.remove('hidden');
+                    }
+                    return;
+                }
+                handleLogin(email, password);
+            };
+        }
+        // Écouteur pour le bouton Google
+        const googleButton = document.getElementById('google-login-btn');
+        if (googleButton) {
+            googleButton.onclick = function () {
+                alert('Connexion avec Google à implémenter');
+            };
+        }
+    }, 100); // Petit délai pour s'assurer que le DOM est bien chargé
 }
 //# sourceMappingURL=login.js.map

@@ -30,6 +30,5 @@ export default async function routes(fastify: FastifyInstance) {
   // Route racine pour vérifier que l'API fonctionne
   fastify.get('/', async (request, reply) => {
     reply.send({ message: 'Bienvenue sur l\'API de ft_transcendence! deuxieme modif' });
-    reply.send({message : 'Ceci est un test de modication de l api'});
   });
 }

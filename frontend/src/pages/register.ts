@@ -5,11 +5,28 @@
  * Elle inclut un formulaire d'inscription avec validation des champs.
  */
 
+// URL de l'API backend
+const API_URL = 'http://localhost:3000/api';
+
+/**
+ * Interface pour la réponse d'inscription
+ */
+interface RegisterResponse {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    avatar_url?: string;
+  };
+  token: string;
+}
+
 /**
  * Affiche la page d'inscription
  * @param container - Élément HTML dans lequel afficher la page
  */
 export function renderRegisterPage(container: HTMLElement): void {
+  console.log('Rendering register page');
   container.innerHTML = `
     <div class="container mx-auto py-8">
       <div class="max-w-md mx-auto card">
@@ -55,8 +72,10 @@ export function renderRegisterPage(container: HTMLElement): void {
             </label>
           </div>
           
+          <div id="error-message" class="text-red-500 text-sm hidden"></div>
+          
           <div>
-            <button type="submit" class="w-full btn-primary">
+            <button type="submit" class="w-full btn-primary" id="register-button">
               S'inscrire
             </button>
           </div>
@@ -95,51 +114,108 @@ export function renderRegisterPage(container: HTMLElement): void {
   `;
   
   // Ajout des écouteurs d'événements
-  document.getElementById('register-form')?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    
-    // Récupération des valeurs du formulaire
-    const usernameInput = document.getElementById('username') as HTMLInputElement;
-    const emailInput = document.getElementById('email') as HTMLInputElement;
-    const passwordInput = document.getElementById('password') as HTMLInputElement;
-    const confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
-    const termsInput = document.getElementById('terms') as HTMLInputElement;
-    
-    const username = usernameInput.value;
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    const confirmPassword = confirmPasswordInput.value;
-    const termsAccepted = termsInput.checked;
-    
-    // Validation basique côté client
-    if (!username || !email || !password || !confirmPassword) {
-      alert('Veuillez remplir tous les champs');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
-      return;
-    }
-    
-    if (password.length < 8) {
-      alert('Le mot de passe doit contenir au moins 8 caractères');
-      return;
-    }
-    
-    if (!termsAccepted) {
-      alert('Vous devez accepter les conditions d\'utilisation');
-      return;
-    }
-    
-    // Simulation d'inscription (à remplacer par une vraie requête API)
-    console.log('Tentative d\'inscription avec:', { username, email, password });
-    
-    // Redirection vers la page de connexion après inscription réussie
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 1000);
-  });
+  //'register form + Form element ligne 34 - 81 
+  const form = document.getElementById('register-form');
+  console.log('Form element:', form);
+  
+  if (form) {
+    form.addEventListener('submit', async (event) => {
+      console.log('Form submitted');
+      event.preventDefault();
+      
+      // Récupération des valeurs du formulaire
+      const usernameInput = document.getElementById('username') as HTMLInputElement;
+      const emailInput = document.getElementById('email') as HTMLInputElement;
+      const passwordInput = document.getElementById('password') as HTMLInputElement;
+      const confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
+      const termsInput = document.getElementById('terms') as HTMLInputElement;
+      const errorMessage = document.getElementById('error-message');
+      const registerButton = document.getElementById('register-button');
+      
+      const username = usernameInput.value;
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      const termsAccepted = termsInput.checked;
+      
+      // Validation basique côté client
+      if (!username || !email || !password || !confirmPassword) {
+        showError('Veuillez remplir tous les champs');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError('Les mots de passe ne correspondent pas');
+        return;
+      }
+      
+      if (password.length < 8) {
+        showError('Le mot de passe doit contenir au moins 8 caractères');
+        return;
+      }
+      
+      if (!termsAccepted) {
+        showError('Vous devez accepter les conditions d\'utilisation');
+        return;
+      }
+      
+      // Fonction pour afficher les erreurs
+      function showError(message: string) {
+        if (errorMessage) {
+          errorMessage.textContent = message;
+          errorMessage.classList.remove('hidden');
+        } else {
+          alert(message);
+        }
+      }
+      
+      try {
+        // Désactiver le bouton pendant la requête
+        if (registerButton) {
+          registerButton.textContent = 'Inscription en cours...';
+          registerButton.setAttribute('disabled', 'true');
+        }
+        
+        // Envoi de la requête d'inscription à l'API
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password
+          })
+        });
+        
+        // Traitement de la réponse
+        if (response.ok) {
+          const data: RegisterResponse = await response.json();
+          
+          // Stockage du token dans le localStorage pour l'authentification
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_id', data.user.id.toString());
+          localStorage.setItem('username', data.user.username);
+          
+          // Redirection vers la page d'accueil après inscription réussie
+          window.location.href = '/';
+        } else {
+          const errorData = await response.json();
+          showError(errorData.error || 'Erreur lors de l\'inscription');
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'inscription:', error);
+        showError('Erreur de connexion au serveur');
+      } finally {
+        // Réactiver le bouton
+        if (registerButton) {
+          registerButton.textContent = 'S\'inscrire';
+          registerButton.removeAttribute('disabled');
+        }
+      }
+    });
+  }
   
   document.getElementById('google-register-btn')?.addEventListener('click', () => {
     // Simulation d'inscription avec Google (à implémenter avec l'API Google)
