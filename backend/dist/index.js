@@ -43,6 +43,9 @@ async function registerRoutes() {
         fastify.get('/', async (request, reply) => {
             return { message: 'Bienvenue sur l\'API de ft_transcendence! Ceci est un test' };
         });
+        fastify.get('/test', async (request, reply) => {
+            return { message: 'Test' };
+        });
         // Route de santé pour vérifier que le serveur fonctionne
         fastify.get('/health', async (request, reply) => {
             return { status: 'ok' };

@@ -37,51 +37,77 @@ const routes: Route[] = [
 ];
 
 /**
- * Initialise le routeur de l'application
- * @param app - L'instance de l'application
+ * Classe Router pour gérer la navigation dans l'application
  */
-export function initRouter(app: App): void {
-  // Fonction pour trouver la route correspondant au chemin actuel
-  const findRoute = (path: string): Route => {
+export class Router {
+  private app: App | null = null;
+
+  /**
+   * Initialise le routeur avec une instance d'application
+   * @param app - L'instance de l'application
+   */
+  init(app: App): void {
+    this.app = app;
+
+    // Gestion des liens internes pour la navigation SPA
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const anchor = target.closest('a');
+      
+      if (anchor && anchor.href.startsWith(window.location.origin)) {
+        event.preventDefault();
+        const path = anchor.pathname;
+        this.navigate(path);
+      }
+    });
+
+    // Gestion du bouton retour du navigateur
+    window.addEventListener('popstate', () => {
+      const path = window.location.pathname;
+      const route = this.findRoute(path);
+      if (this.app) {
+        this.app.render(route.component);
+      }
+    });
+
+    // Exposition de la fonction de navigation
+    app.navigate = this.navigate.bind(this);
+
+    // Navigation initiale vers la route correspondant à l'URL actuelle
+    const path = window.location.pathname;
+    const route = this.findRoute(path);
+    app.render(route.component);
+  }
+
+  /**
+   * Trouve la route correspondant au chemin spécifié
+   * @param path - Le chemin URL
+   * @returns La route correspondante
+   */
+  private findRoute(path: string): Route {
     const route = routes.find(route => route.path === path);
     return route || routes.find(route => route.path === '*')!;
-  };
+  }
 
-  // Fonction pour naviguer vers une route
-  const navigate = (path: string): void => {
-    const route = findRoute(path);
+  /**
+   * Navigue vers le chemin spécifié
+   * @param path - Le chemin URL
+   */
+  navigate(path: string): void {
+    if (!this.app) {
+      console.error('Router not initialized');
+      return;
+    }
+
+    const route = this.findRoute(path);
     
     // Mise à jour de l'URL sans rechargement de la page
     window.history.pushState({}, '', path);
     
     // Rendu du composant correspondant à la route
-    app.render(route.component);
-  };
-
-  // Gestion des liens internes pour la navigation SPA
-  document.addEventListener('click', (event) => {
-    const target = event.target as HTMLElement;
-    const anchor = target.closest('a');
-    
-    if (anchor && anchor.href.startsWith(window.location.origin)) {
-      event.preventDefault();
-      const path = anchor.pathname;
-      navigate(path);
-    }
-  });
-
-  // Gestion du bouton retour du navigateur
-  window.addEventListener('popstate', () => {
-    const path = window.location.pathname;
-    const route = findRoute(path);
-    app.render(route.component);
-  });
-
-  // Exposition de la fonction de navigation
-  app.navigate = navigate;
-
-  // Navigation initiale vers la route correspondant à l'URL actuelle
-  const path = window.location.pathname;
-  const route = findRoute(path);
-  app.render(route.component);
+    this.app.render(route.component);
+  }
 }
+
+// Exporter une instance unique du router
+export const router = new Router();

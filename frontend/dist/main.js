@@ -11,7 +11,7 @@
 console.log("bonjour");
 import './styles/main.css';
 // Import des modules et composants
-import { initRouter } from './router';
+import { router } from './router';
 import { createApp } from './app';
 import { initializeGameEngine } from './game/engine';
 /**
@@ -22,8 +22,8 @@ async function initApp() {
     try {
         // Création de l'application
         const app = createApp();
-        // Initialisation du routeur
-        initRouter(app);
+        // Initialisation du routeur avec notre application
+        router.init(app);
         // Initialisation du moteur de jeu
         initializeGameEngine();
         // Montage de l'application dans le DOM
@@ -31,6 +31,9 @@ async function initApp() {
         if (!appElement) {
             throw new Error("L'élément #app n'a pas été trouvé dans le DOM");
         }
+        // Vérifier si l'utilisateur est connecté
+        const userStr = localStorage.getItem('user');
+        const isLoggedIn = !!userStr;
         // Affichage du contenu initial
         appElement.innerHTML = `
       <header class="bg-primary-600 text-white p-4 shadow-md">
@@ -41,23 +44,18 @@ async function initApp() {
               <li><a href="/" class="hover:text-primary-200">Accueil</a></li>
               <li><a href="/game" class="hover:text-primary-200">Jouer</a></li>
               <li><a href="/tournaments" class="hover:text-primary-200">Tournois</a></li>
-              <li><a href="/profile" class="hover:text-primary-200">Profil</a></li>
-              <li><a href="/register" class="hover:text-primary-200">S'inscrire</a></li>
+              ${isLoggedIn ? `<li><a href="/profile" class="hover:text-primary-200">Profil</a></li>` : ''}
+              ${!isLoggedIn ? `<li><a href="/register" class="hover:text-primary-200">S'inscrire</a></li>` : ''}
             </ul>
           </nav>
-          <button id="login-btn" class="btn-secondary">Connexion</button>
+          ${isLoggedIn
+            ? `<button id="logout-btn" class="btn-secondary">Déconnexion</button>`
+            : `<button id="login-btn" class="btn-secondary">Connexion</button>`}
         </div>
       </header>
       
-      <main class="container mx-auto p-4 flex-grow">
-        <div class="card my-8">
-          <h2 class="text-2xl font-bold mb-4">Bienvenue sur ft_transcendence</h2>
-          <p class="mb-4">Le jeu de Pong ultime où vous pouvez défier vos amis et participer à des tournois en ligne.</p>
-          <div class="flex space-x-4 mt-6">
-            <button id="play-btn" class="btn-primary">Jouer maintenant</button>
-            <button id="learn-btn" class="btn-secondary">En savoir plus</button>
-          </div>
-        </div>
+      <main id="app-container" class="container mx-auto p-4 flex-grow">
+        <!-- Le contenu sera injecté ici par le routeur -->
       </main>
       
       <footer class="bg-gray-800 text-white p-4 mt-auto">
@@ -67,20 +65,19 @@ async function initApp() {
       </footer>
     `;
         // Ajout des écouteurs d'événements
-        document.getElementById('play-btn')?.addEventListener('click', () => {
-            console.log('Play button clicked, redirecting to /game');
-            window.location.href = '/game';
-        });
         document.getElementById('login-btn')?.addEventListener('click', () => {
-            console.log('Login button clicked, redirecting to /login');
-            // Utilisation de app.navigate au lieu de window.location.href
-            // pour s'assurer que le routeur SPA est utilisé
-            if (typeof app.navigate === 'function') {
-                app.navigate('/login');
-            }
-            else {
-                window.location.href = '/login';
-            }
+            router.navigate('/login');
+        });
+        document.getElementById('logout-btn')?.addEventListener('click', () => {
+            // Supprimer les informations d'authentification
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            // Rediriger vers la page d'accueil
+            router.navigate('/');
+            // Recharger la page pour mettre à jour l'interface
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
         });
         console.log('Application initialisée avec succès');
     }

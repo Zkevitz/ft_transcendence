@@ -29,9 +29,9 @@ export function createApp() {
         // Fonction de rendu des composants
         render: (component) => {
             // Récupération de l'élément principal de l'application
-            const mainElement = document.querySelector('main');
+            const mainElement = document.getElementById('app-container');
             if (!mainElement) {
-                console.error("L'élément main n'a pas été trouvé dans le DOM");
+                console.error("L'élément #app-container n'a pas été trouvé dans le DOM");
                 return;
             }
             // Rendu du composant en fonction de son nom
