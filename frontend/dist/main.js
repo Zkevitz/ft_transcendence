@@ -42,7 +42,7 @@ async function initApp() {
           <nav class="hidden md:block">
             <ul class="flex space-x-4">
               <li><a href="/" class="hover:text-primary-200">Accueil</a></li>
-              <li><a href="/game" class="hover:text-primary-200">Jouer</a></li>
+              <li><a href="/game" class="hover:text-primary-200" id="play-game-link">Jouer</a></li>
               <li><a href="/tournaments" class="hover:text-primary-200">Tournois</a></li>
               ${isLoggedIn ? `<li><a href="/profile" class="hover:text-primary-200">Profil</a></li>` : ''}
               ${!isLoggedIn ? `<li><a href="/register" class="hover:text-primary-200">S'inscrire</a></li>` : ''}
@@ -64,6 +64,17 @@ async function initApp() {
         </div>
       </footer>
     `;
+        // Ajouter des écouteurs d'événements après que le contenu HTML a été inséré
+        const playGameLink = document.getElementById('play-game-link');
+        if (playGameLink) {
+            playGameLink.addEventListener('click', (event) => {
+                event.preventDefault(); // Empêche la navigation par défaut
+                // Votre code pour gérer le clic sur le lien "Jouer"
+                console.log('Lien Jouer cliqué');
+                // Utiliser le routeur pour naviguer vers la page du jeu
+                router.navigate('/game');
+            });
+        }
         // Ajout des écouteurs d'événements
         document.getElementById('login-btn')?.addEventListener('click', () => {
             router.navigate('/login');

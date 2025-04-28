@@ -1,4 +1,5 @@
 /**
+ * CLASSE Router
  * Module de routage pour l'application
  * 
  * Ce module gère la navigation entre les différentes pages de l'application

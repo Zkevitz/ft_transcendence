@@ -26,12 +26,6 @@ async function initApp() {
     // Création de l'application
     const app = createApp();
     
-    // Initialisation du routeur avec notre application
-    router.init(app);
-    
-    // Initialisation du moteur de jeu
-    initializeGameEngine();
-    
     // Montage de l'application dans le DOM
     const appElement = document.getElementById('app');
     if (!appElement) {
@@ -50,7 +44,7 @@ async function initApp() {
           <nav class="hidden md:block">
             <ul class="flex space-x-4">
               <li><a href="/" class="hover:text-primary-200">Accueil</a></li>
-              <li><a href="/game" class="hover:text-primary-200">Jouer</a></li>
+              <li><a href="/game" class="hover:text-primary-200" id="play-game-link">Jouer</a></li>
               <li><a href="/tournaments" class="hover:text-primary-200">Tournois</a></li>
               ${isLoggedIn ? `<li><a href="/profile" class="hover:text-primary-200">Profil</a></li>` : ''}
               ${!isLoggedIn ? `<li><a href="/register" class="hover:text-primary-200">S'inscrire</a></li>` : ''}
@@ -69,10 +63,40 @@ async function initApp() {
       
       <footer class="bg-gray-800 text-white p-4 mt-auto">
         <div class="container mx-auto text-center">
-          <p>&copy; 2025 ft_transcendence - Tous droits réservés</p>
+          <p>&copy; 2025 ft_transcendence. Tous droits réservés.</p>
         </div>
       </footer>
     `;
+    
+    // S'assurer que l'élément app-container existe avant d'initialiser le routeur
+    const appContainer = document.getElementById('app-container');
+    if (!appContainer) {
+      console.error("L'élément #app-container n'a pas été trouvé dans le DOM après insertion");
+      return;
+    }
+    
+    // Initialisation du routeur avec notre application APRÈS création de l'élément app-container
+    router.init(app);
+    
+    // Initialisation du moteur de jeu
+    initializeGameEngine();
+    
+    // Ajouter des écouteurs d'événements après que le contenu HTML a été inséré
+    const playGameLink = document.getElementById('play-game-link');
+    if (playGameLink) {
+      playGameLink.addEventListener('click', (event) => {
+        event.preventDefault(); // Empêche la navigation par défaut
+        
+        // Votre code pour gérer le clic sur le lien "Jouer"
+        console.log('Lien Jouer cliqué');
+        
+        // Utiliser le routeur pour naviguer vers la page du jeu
+        router.navigate('/game');
+      });
+    }
+    else {
+      console.log('playGameLink introuvable');
+    }
     
     // Ajout des écouteurs d'événements
     document.getElementById('login-btn')?.addEventListener('click', () => {
