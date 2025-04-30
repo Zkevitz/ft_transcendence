@@ -10,6 +10,7 @@
  * Le jeu est conçu pour être jouable à la fois en local et en ligne
  * via des connexions WebSocket pour le multijoueur.
  */
+import { disableScroll } from '../pages/game';
 // État global du jeu
 let gameState = null;
 let animationFrameId = null;
@@ -71,6 +72,7 @@ export function startGame(canvasId) {
         console.error(`Canvas avec l'ID ${canvasId} non trouvé`);
         return;
     }
+    disableScroll();
     const ctx = canvas.getContext('2d');
     if (!ctx) {
         console.error('Impossible d\'obtenir le contexte 2D du canvas');

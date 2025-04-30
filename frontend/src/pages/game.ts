@@ -69,7 +69,7 @@ export function renderGamePage(container: HTMLElement): void {
   stopGameBtn?.addEventListener('click', () => {
     // Arrêt de la partie
     stopGame();
-    
+    enableScroll();
     // Mise à jour des boutons
     startGameBtn.disabled = false;
     stopGameBtn.disabled = true;
@@ -79,4 +79,23 @@ export function renderGamePage(container: HTMLElement): void {
   // Si besoin d'une fonction de nettoyage, il faut changer la signature de renderGamePage
   // ou appeler stopGame() ailleurs. Ici, on ne retourne rien.
   // stopGame(); // <-- Appeler ici si tu veux arrêter le jeu immédiatement
+}
+
+export function disableScroll(){
+  // Sauvegarde la position de défilement actuelle
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  
+  // Applique la position actuelle pour éviter le saut lors du verrouillage
+  window.scrollTo(scrollLeft, scrollTop);
+  
+  // Désactive le défilement en utilisant CSS
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+}
+
+export function enableScroll() {
+  // Réactive le défilement
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
 }

@@ -63,6 +63,7 @@ export function renderGamePage(container) {
     stopGameBtn?.addEventListener('click', () => {
         // Arrêt de la partie
         stopGame();
+        enableScroll();
         // Mise à jour des boutons
         startGameBtn.disabled = false;
         stopGameBtn.disabled = true;
@@ -71,5 +72,17 @@ export function renderGamePage(container) {
     // Si besoin d'une fonction de nettoyage, il faut changer la signature de renderGamePage
     // ou appeler stopGame() ailleurs. Ici, on ne retourne rien.
     // stopGame(); // <-- Appeler ici si tu veux arrêter le jeu immédiatement
+}
+export function disableScroll() {
+    const TopScroll = window.pageYOffset || document.documentElement.scrollTop;
+    const LeftScroll = window.pageXOffset || document.documentElement.scrollLeft;
+    window.onscroll = function () {
+        window.scrollTo(LeftScroll, TopScroll);
+    };
+}
+function enableScroll() {
+    window.onscroll = null;
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
 }
 //# sourceMappingURL=game.js.map

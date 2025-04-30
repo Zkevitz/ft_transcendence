@@ -11,6 +11,8 @@
  * via des connexions WebSocket pour le multijoueur.
  */
 
+import { disableScroll } from '../pages/game';
+
 // Types pour les éléments du jeu
 interface GameObject {
   x: number;
@@ -104,6 +106,7 @@ export function startGame(canvasId: string): void {
     console.error(`Canvas avec l'ID ${canvasId} non trouvé`);
     return;
   }
+  disableScroll();
   
   const ctx = canvas.getContext('2d');
   if (!ctx) {
