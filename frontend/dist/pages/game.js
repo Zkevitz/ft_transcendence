@@ -74,14 +74,17 @@ export function renderGamePage(container) {
     // stopGame(); // <-- Appeler ici si tu veux arrêter le jeu immédiatement
 }
 export function disableScroll() {
-    const TopScroll = window.pageYOffset || document.documentElement.scrollTop;
-    const LeftScroll = window.pageXOffset || document.documentElement.scrollLeft;
-    window.onscroll = function () {
-        window.scrollTo(LeftScroll, TopScroll);
-    };
+    // Sauvegarde la position de défilement actuelle
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    // Applique la position actuelle pour éviter le saut lors du verrouillage
+    window.scrollTo(scrollLeft, scrollTop);
+    // Désactive le défilement en utilisant CSS
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 }
-function enableScroll() {
-    window.onscroll = null;
+export function enableScroll() {
+    // Réactive le défilement
     document.body.style.overflow = '';
     document.documentElement.style.overflow = '';
 }

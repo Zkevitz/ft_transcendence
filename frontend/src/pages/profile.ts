@@ -170,6 +170,7 @@ export async function renderProfilePage(container: HTMLElement): Promise<void> {
     
     // Ajout des écouteurs d'événements
     document.getElementById('edit-profile-btn')?.addEventListener('click', () => {
+      console.log('Edit profile button clicked');
       showEditProfileModal(user);
     });
     
@@ -205,6 +206,8 @@ export async function renderProfilePage(container: HTMLElement): Promise<void> {
  */
 function showEditProfileModal(user: any): void {
   // Créer la modale
+  console.log('Edit profile modal opened');
+  console.log(document.body);
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   modal.innerHTML = `
@@ -237,11 +240,15 @@ function showEditProfileModal(user: any): void {
     </div>
   `;
   
-  document.body.appendChild(modal);
-  
-  // Gérer la fermeture de la modale
+  const appContainer = document.getElementById('app') as HTMLElement;
+  if(appContainer){
+    appContainer.appendChild(modal);
+  }
+  else{
+    console.log('appContainer not found')
+  }
   const closeModal = () => {
-    document.body.removeChild(modal);
+    appContainer.removeChild(modal);
   };
   
   modal.querySelector('.modal-close')?.addEventListener('click', closeModal);
