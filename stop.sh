@@ -10,8 +10,8 @@ echo -e "${YELLOW}[INFO] Arrêt des services ft_transcendence...${NC}"
 
 # Arrêt des conteneurs Docker
 echo -e "${YELLOW}[INFO] Arrêt des conteneurs Docker...${NC}"
-if docker ps -q --filter "name=git_trans" | grep -q .; then
-    docker-compose down
+if docker ps -q --filter "name=ft_trans" | grep -q .; then
+    docker-compose down --remove-orphans
     echo -e "${GREEN}[SUCCESS] Conteneurs Docker arrêtés avec succès${NC}"
 else
     echo -e "${YELLOW}[INFO] Aucun conteneur Docker en cours d'exécution${NC}"
@@ -43,6 +43,16 @@ if [ -n "$NPM_PIDS" ]; then
     echo -e "${GREEN}[SUCCESS] Processus npm arrêtés${NC}"
 else
     echo -e "${YELLOW}[INFO] Aucun processus npm lié au projet trouvé${NC}"
+fi
+
+# Suppression des dossiers dist
+echo -e "${YELLOW}[INFO] Suppression des dossiers dist...${NC}"
+if [ -d "frontend/dist" ] || [ -d "backend/dist" ]; then
+    # Suppression complète des dossiers dist avec sudo pour gérer les fichiers appartenant à root
+    sudo rm -rf frontend/dist backend/dist 2>/dev/null || true
+    echo -e "${GREEN}[SUCCESS] Dossiers dist supprimés${NC}"
+else
+    echo -e "${YELLOW}[INFO] Aucun dossier dist trouvé${NC}"
 fi
 
 # Vérification finale

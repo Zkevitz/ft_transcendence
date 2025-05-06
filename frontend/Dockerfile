@@ -10,7 +10,6 @@ WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 COPY tsconfig.json ./
-COPY vite.config.* ./
 COPY tailwind.config.* ./
 COPY postcss.config.* ./
 COPY index.html ./
@@ -31,6 +30,7 @@ WORKDIR /app
 # Installer uniquement les dépendances nécessaires à l'exécution
 COPY package.json ./
 COPY package-lock.json ./
+# --omit=dev permet de ne pas installer les dépendances de développement specifié dans package.json
 RUN npm install --omit=dev
 
 # Copier les fichiers générés
