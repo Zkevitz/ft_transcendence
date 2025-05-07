@@ -22,7 +22,7 @@ export function renderTrainingPage(container: HTMLElement): void {
     // Ajouter le contenu HTML de la page
     container.innerHTML = `
     <h1 class="text-3xl font-bold mb-4">Messagerie</h1>
-    <div id="messages" class="mb-4" style="height: 200px; overflow-y: auto; border: 1px solid #ccc;"></div>
+    <div id="messages" class="messages-container"></div>
     <input type="text" id="messageInput" placeholder="Tapez votre message" class="w-full p-2 border border-gray-300 rounded mb-4" />
     <button id="sendButton" class="bg-blue-500 text-white p-2 rounded">Envoyer</button>
   `;
@@ -51,11 +51,12 @@ export function renderTrainingPage(container: HTMLElement): void {
             console.log('Message brut, pas de JSON');
         }
 
-        // Créer un élément de message
+        // Créer un élément de message avec les classes CSS
         const messageElement = document.createElement('div');
-        const displaymessage = "<h1>" + message + "</h1>"
-        messageElement.innerHTML = displaymessage;
-        //messageElement.textContent = message;
+        messageElement.className = 'message-item message-received';
+        
+        // Afficher le contenu du message
+        messageElement.textContent = typeof message === 'object' ? JSON.stringify(message) : message.toString();
 
         // Vérification si l'élément a bien été créé
         console.log('Message à ajouter :', messageElement);
@@ -64,6 +65,9 @@ export function renderTrainingPage(container: HTMLElement): void {
         if (MessagerieContainer) {
             console.log('Ajout du message dans le container');
             MessagerieContainer.appendChild(messageElement);
+            
+            // Faire défiler automatiquement vers le bas pour voir les nouveaux messages
+            MessagerieContainer.scrollTop = MessagerieContainer.scrollHeight;
         }
     };
 
@@ -99,6 +103,21 @@ export function renderTrainingPage(container: HTMLElement): void {
         if (message) {
             console.log("Envoi du message :", message);
             ws.send(message);
+            
+            // Afficher localement le message envoyé
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message-item message-sent';
+            
+            // Ajouter un préfixe pour indiquer que c'est votre message
+            messageElement.textContent = `Moi: ${message}`;
+            
+            // Ajouter l'élément dans le conteneur
+            if (MessagerieContainer) {
+                MessagerieContainer.appendChild(messageElement);
+                // Faire défiler automatiquement vers le bas
+                MessagerieContainer.scrollTop = MessagerieContainer.scrollHeight;
+            }
+            
             messageInput.value = "";  // Réinitialiser le champ de message après envoi
         } else {
             console.log("Le message est vide.");

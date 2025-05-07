@@ -52,3 +52,36 @@
   --game-foreground: #fff;
   --animation-speed: 0.2s;
 }
+
+/* Styles pour la messagerie */
+/* Conteneur de messages */
+.messages-container {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+/* Style de base pour tous les messages */
+.message-item {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+/* Style pour les messages reçus */
+.message-received {
+  background-color: #e1f5fe;
+  border: 1px solid #b3e5fc;
+  text-align: left;
+}
+
+/* Style pour les messages envoyés */
+.message-sent {
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  text-align: right;
+}
