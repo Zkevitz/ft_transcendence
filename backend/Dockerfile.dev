@@ -1,0 +1,18 @@
+# Dockerfile.dev pour le backend en mode développement
+FROM node:16
+
+# Répertoire de travail
+WORKDIR /app
+
+# Copie des fichiers de dépendances
+COPY package.json ./
+
+# Installation des dépendances
+RUN npm install && \
+    npm install -g ts-node-dev
+
+# Exposition du port
+EXPOSE 3000
+
+# Commande par défaut (sera remplacée par celle dans docker-compose.dev.yml)
+CMD ["npm", "run", "dev"]

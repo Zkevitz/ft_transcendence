@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Service frontend en mode développement
+  frontend:
+    image: node:18
+    working_dir: /app
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8080:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    command: bash -c "npm install && npx vite --host 0.0.0.0"
+
+  # Service backend en mode développement
+  backend:
+    image: node:16
+    working_dir: /app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+      - JWT_SECRET=${JWT_SECRET:-supersecretkey}
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    ports:
+      - "3000:3000"
+    command: bash -c "npm install && npm run dev"
+
+# Définition des réseaux
+networks:
+  app-network:
+    driver: bridge

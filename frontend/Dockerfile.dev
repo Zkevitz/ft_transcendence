@@ -1,0 +1,14 @@
+# Dockerfile.dev pour le frontend en mode développement
+FROM node:18
+
+WORKDIR /app
+
+# Installation des dépendances uniquement
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Exposer le port utilisé par Vite en mode développement
+EXPOSE 5173
+
+# Commande par défaut (sera remplacée par celle dans docker-compose.dev.yml)
+CMD ["npx", "vite", "--host", "0.0.0.0"]

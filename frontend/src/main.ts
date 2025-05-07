@@ -63,7 +63,7 @@ async function initApp() {
       
       <footer class="bg-gray-800 text-white p-4 mt-auto">
         <div class="container mx-auto text-center">
-          <p>&copy; 2025 ft_transcendence. Tous droits réservés.</p>
+          <p>&copy; 2025 ft_transcendence. CECI EST UN TEST.</p>
         </div>
       </footer>
     `;
