@@ -13,6 +13,47 @@ const server: FastifyInstance = Fastify({
   logger: true,
 });
 
+
+async function registerWebSocketRoutes(){
+  const clients = new Set<import('ws').WebSocket>();
+
+server.get('/ws/chat', { websocket: true }, (connection, req) => {
+  // Authentifier via JWT (dans les headers ou URL query ?)
+  const token = req.headers['sec-websocket-protocol'];
+  if (!token) {
+    connection.socket.close();
+    return;
+  }
+
+  try {
+    const user = server.jwt.verify(token.toString());
+    console.log(`Utilisateur connecté`);
+  } catch (err) {
+    console.log('JWT invalide');
+    connection.socket.close();
+    return;
+  }
+
+  clients.add(connection.socket);
+
+  connection.socket.on('message', (msg) => {
+    console.log('Message reçu :', msg.toString());
+
+    // Diffuser à tous les autres clients
+    for (const client of clients) {
+      if (client.readyState === 1 && client !== connection.socket) {
+        client.send(msg.toString());
+      }
+    }
+  });
+
+  connection.socket.on('close', () => {
+    clients.delete(connection.socket);
+    console.log('Client déconnecté');
+  });
+})
+}
+
 // Enregistrement des plugins
 async function registerPlugins() {
   // CORS pour permettre les requêtes cross-origin
@@ -26,6 +67,7 @@ async function registerPlugins() {
   // WebSocket pour les communications en temps réel
   await server.register(websocket);
 
+  
   // JWT pour l'authentification
   await server.register(jwt, {
     secret: JWT_SECRET,
@@ -62,6 +104,7 @@ async function start() {
   try {
     // Enregistrement des plugins et des routes
     await registerPlugins();
+    await registerWebSocketRoutes();
     await registerRoutes();
 
     // Démarrage du serveur

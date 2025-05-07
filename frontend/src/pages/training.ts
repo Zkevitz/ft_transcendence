@@ -1,0 +1,107 @@
+import { renderLoginPage } from "./login";
+import { router } from '../router';
+
+/**
+ * Affiche la page des tournois
+ * @param container - Élément HTML dans lequel afficher la page
+ */
+export function renderTrainingPage(container: HTMLElement): void {
+    const userstr = localStorage.getItem('user');
+    if (!userstr) {
+        renderLoginPage(container);
+        return;
+    }
+
+    const JWTtoken = localStorage.getItem('authToken');
+    if (!JWTtoken) {
+        console.log('Problème avec la récupération du JWT token de l\'utilisateur');
+        renderLoginPage(container);
+        return;
+    }
+
+    // Ajouter le contenu HTML de la page
+    container.innerHTML = `
+    <h1 class="text-3xl font-bold mb-4">Messagerie</h1>
+    <div id="messages" class="mb-4" style="height: 200px; overflow-y: auto; border: 1px solid #ccc;"></div>
+    <input type="text" id="messageInput" placeholder="Tapez votre message" class="w-full p-2 border border-gray-300 rounded mb-4" />
+    <button id="sendButton" class="bg-blue-500 text-white p-2 rounded">Envoyer</button>
+  `;
+
+    // Sélectionner l'élément de la messagerie
+    const MessagerieContainer = document.getElementById('messages') as HTMLDivElement;
+    if (!MessagerieContainer) {
+        console.error("L'élément de messagerie est introuvable.");
+        return;
+    }
+
+    // Initialiser la connexion WebSocket
+    const ws = new WebSocket('ws://localhost:3000/ws/chat', JWTtoken);
+
+    // Gérer les messages entrants
+    ws.onmessage = (event) => {
+        console.log('Message reçu :', event.data);
+
+        // Vérifier si le message est en JSON
+        let message = event.data;
+        try {
+            // Tenter de parser le message si c'est un JSON
+            message = JSON.parse(event.data);
+            console.log('Message parsé :', message);
+        } catch (error) {
+            console.log('Message brut, pas de JSON');
+        }
+
+        // Créer un élément de message
+        const messageElement = document.createElement('div');
+        const displaymessage = "<h1>" + message + "</h1>"
+        messageElement.innerHTML = displaymessage;
+        //messageElement.textContent = message;
+
+        // Vérification si l'élément a bien été créé
+        console.log('Message à ajouter :', messageElement);
+
+        // Ajouter l'élément dans le conteneur
+        if (MessagerieContainer) {
+            console.log('Ajout du message dans le container');
+            MessagerieContainer.appendChild(messageElement);
+        }
+    };
+
+    // Gérer l'ouverture de la connexion WebSocket
+    ws.onopen = () => {
+        console.log('Connexion WebSocket ouverte');
+        ws.send('NOUVELLE CONNEXION SUR LA MESSAGERIE');
+    };
+
+    // Gérer les erreurs WebSocket
+    ws.onerror = (error) => {
+        console.error('Erreur WebSocket:', error);
+    };
+
+    // Gérer la fermeture de la connexion WebSocket
+    ws.onclose = (event) => {
+        console.log('Connexion WebSocket fermée', event);
+    };
+
+    // Gérer l'envoi de message
+    const sendButton = document.getElementById('sendButton') as HTMLButtonElement;
+    const messageInput = document.getElementById('messageInput') as HTMLInputElement;
+
+    if (!sendButton || !messageInput) {
+        console.error("Le bouton ou le champ de message est introuvable.");
+        return;
+    }
+
+    sendButton.addEventListener('click', () => {
+        console.log("Bouton d'envoi de message déclenché");
+
+        const message = messageInput.value;
+        if (message) {
+            console.log("Envoi du message :", message);
+            ws.send(message);
+            messageInput.value = "";  // Réinitialiser le champ de message après envoi
+        } else {
+            console.log("Le message est vide.");
+        }
+    });
+}

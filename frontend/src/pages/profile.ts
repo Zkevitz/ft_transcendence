@@ -240,7 +240,7 @@ function showEditProfileModal(user: any): void {
     </div>
   `;
   
-  const appContainer = document.getElementById('app') as HTMLElement;
+  const appContainer = document.getElementById('app-container') as HTMLElement;
   if(appContainer){
     appContainer.appendChild(modal);
   }

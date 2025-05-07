@@ -9,7 +9,6 @@
  */
 
 // Import des styles
-console.log("bonjour")
 import './styles/main.css';
 
 // Import des modules et composants
@@ -46,6 +45,7 @@ async function initApp() {
               <li><a href="/" class="hover:text-primary-200">Accueil</a></li>
               <li><a href="/game" class="hover:text-primary-200" id="play-game-link">Jouer</a></li>
               <li><a href="/tournaments" class="hover:text-primary-200">Tournois</a></li>
+              <li><a href="/training" class="hover:text-primary-200">Training</a></li>
               ${isLoggedIn ? `<li><a href="/profile" class="hover:text-primary-200">Profil</a></li>` : ''}
               ${!isLoggedIn ? `<li><a href="/register" class="hover:text-primary-200">S'inscrire</a></li>` : ''}
             </ul>

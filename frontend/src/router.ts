@@ -33,6 +33,7 @@ const routes: Route[] = [
   { path: '/profile', component: 'profile' },
   { path: '/login', component: 'login' },
   { path: '/register', component: 'register' },
+  { path: '/training', component: 'training'},
   // Route par défaut (404)
   { path: '*', component: 'not-found' }
 ];

@@ -16,6 +16,7 @@ import { renderProfilePage } from './pages/profile';
 import { renderLoginPage } from './pages/login';
 import { renderRegisterPage } from './pages/register';
 import { renderNotFoundPage } from './pages/not-found';
+import { renderTrainingPage } from './pages/training';
 
 // Type pour l'application
 interface App {
@@ -46,6 +47,9 @@ export function createApp(): App {
       
       // Rendu du composant en fonction de son nom
       switch (component) {
+        case 'training' :
+          renderTrainingPage(mainElement);
+          break;
         case 'home':
           renderHomePage(mainElement);
           break;
