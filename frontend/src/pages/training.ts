@@ -60,6 +60,7 @@ export function renderTrainingPage(container: HTMLElement): void {
 
         // Vérification si l'élément a bien été créé
         console.log('Message à ajouter :', messageElement);
+        console.log('Message à ajouter :', MessagerieContainer);
 
         // Ajouter l'élément dans le conteneur
         if (MessagerieContainer) {
