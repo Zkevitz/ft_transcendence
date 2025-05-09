@@ -29,6 +29,7 @@ export async function renderProfilePage(container: HTMLElement): Promise<void> {
     }
     
     const userId = currentUser.id;
+    console.log(userId);
     
     // Récupérer les données en parallèle
     const [profileResponse, statsResponse, friendsResponse, gamesResponse] = await Promise.all([

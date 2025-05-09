@@ -14,6 +14,7 @@ import './styles/main.css';
 // Import des modules et composants
 import { router } from './router';
 import { createApp } from './app';
+import { userApi } from './services/api';
 import { initializeGameEngine } from './game/engine';
 
 /**
@@ -117,6 +118,15 @@ async function initApp() {
       }, 100);
     });
     
+    document.getElementById('testbutton')?.addEventListener('click', () => {
+      const token = localStorage.getItem('authToken')
+      const token_id = JSON.parse(atob(token.split('.')[1]));
+      const rtn = userApi.getPlayerStats(token_id.id);
+      
+      console.log(token_id)
+      console.log(rtn);
+    });
+
     console.log('Application initialisée avec succès');
   } catch (error) {
     console.error('Erreur lors de l\'initialisation de l\'application:', error);

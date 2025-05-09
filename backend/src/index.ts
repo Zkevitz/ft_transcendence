@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { fastify, FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
 import jwt from '@fastify/jwt';
@@ -76,12 +76,12 @@ async function registerPlugins() {
 
 // Enregistrement des routes
 async function registerRoutes() {
-  // Import des routes
+  // Import des routes ROUTES etant une fonction asynchrones
   const routes = require('./routes').default;
   
   // Enregistrement des routes
   await server.register(routes);
-  
+  console.log(server.route)
   // Enregistrement des routes avec le préfixe /api
   server.register(async (fastify) => {
     // Route de base pour tester l'API

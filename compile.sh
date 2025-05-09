@@ -35,6 +35,7 @@ cp -r frontend/src/styles/*.css frontend/dist/styles/
 # Vérifier si les fichiers de compilation existent
 if [ -d "backend/dist" ] && [ "$(find backend/dist -type f 2>/dev/null | wc -l)" -gt 0 ]; then
     echo "Compilation terminée avec succès!"
+    echo "Vous pouvez lancer le mode dev de vite avec './dev.sh'"
     echo "Vous pouvez maintenant lancer l'application avec './start.sh'"
 else
     echo "La compilation a échoué. Veuillez vérifier les erreurs ci-dessus."
