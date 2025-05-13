@@ -83,6 +83,24 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   };
 
+  fastify.addHook('onRequest', async(request, reply) => {
+    const token = request.cookies.jwt;
+    console.log("VOICI MON HOOOOK")
+    console.log(token)
+    if(!token)
+      return reply.status(401).send({message: "Token manquant dans les coockies"});
+    try{
+      await request.jwtVerify();
+      //console.log(request)
+      console.log("jwt cookie encore valide")
+      return reply.send({message: "jwt cookie encore valide"}) //peut etre une bonne idee de refresh le temp d'expiration des coockies
+    }
+    catch(err){
+      console.error("Erreur lors de la vérification du JWT:", err);
+      return reply.status(403).send({ message: "Token invalide ou expiré" });
+    }
+  });
+
   // Route d'inscription
   fastify.post('/register', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -118,6 +136,20 @@ export default async function userRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // route pour savoir si un utilisateur est connecter avec des token valide(expiration, etc)
+  fastify.get('/auth/status', async(request: FastifyRequest, reply: FastifyReply) => {
+      console.log("Tous les cookies reçus:", request.cookies);
+      const token = request.cookies.jwt;
+      //console.log("allgoodhere");
+      console.log(token);
+      //console.log(request);
+
+      if(!token){
+        console.log("probleme avec la nouvelle route");
+        return reply.code(300).send({error: "probleme avec  la nouvelle route"})
+      }
+  })
+
   // Route de connexion
   fastify.post('/login', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
@@ -137,7 +169,14 @@ export default async function userRoutes(fastify: FastifyInstance) {
       
       // Génération du token JWT
       const token = fastify.jwt.sign({ id: user.id }, { expiresIn: '1d' });
-      
+      reply.setCookie('jwt', token, {
+        httpOnly: true,
+        secure : false,//process.env.NODE_ENV === 'production',
+        sameSite : 'strict',
+        maxAge: 3600000,
+        path: '/'
+      });
+      console.log("JE SUIS LAAAAA")
       reply.send({ user, token });
     } catch (err) {
       reply.code(500).send({ error: 'Erreur lors de la connexion' });

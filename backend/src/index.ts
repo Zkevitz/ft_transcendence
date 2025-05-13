@@ -1,4 +1,5 @@
-import Fastify, { fastify, FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance } from 'fastify';
+import fastifyCookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
 import jwt from '@fastify/jwt';
@@ -6,20 +7,19 @@ import jwt from '@fastify/jwt';
 // Configuration de l'environnement
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecret'; // À remplacer par une variable d'environnement sécurisée
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey'; // À remplacer par une variable d'environnement sécurisée
 
 // Création de l'instance Fastify
 const server: FastifyInstance = Fastify({
   logger: true,
 });
 
-
 async function registerWebSocketRoutes(){
   const clients = new Set<import('ws').WebSocket>();
 
 server.get('/ws/chat', { websocket: true }, (connection, req) => {
   // Authentifier via JWT (dans les headers ou URL query ?)
-  const token = req.headers['sec-websocket-protocol'];
+  const token = req.headers['sec-websocket-protocol'];  
   if (!token) {
     connection.socket.close();
     return;
@@ -56,6 +56,8 @@ server.get('/ws/chat', { websocket: true }, (connection, req) => {
 
 // Enregistrement des plugins
 async function registerPlugins() {
+
+  await server.register(fastifyCookie)
   // CORS pour permettre les requêtes cross-origin
   await server.register(cors, {
     origin: true, // Autorise toutes les origines en développement
@@ -67,10 +69,13 @@ async function registerPlugins() {
   // WebSocket pour les communications en temps réel
   await server.register(websocket);
 
-  
   // JWT pour l'authentification
   await server.register(jwt, {
     secret: JWT_SECRET,
+    cookie: {
+      cookieName: 'jwt',
+      signed: false
+    }
   });
 }
 

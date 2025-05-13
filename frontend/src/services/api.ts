@@ -43,7 +43,8 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
     console.log(`Envoi de requête à ${API_URL}/api${endpoint}`);
     const response = await fetch(`${API_URL}/api${endpoint}`, {
       ...options,
-      headers
+      headers,
+      credentials: 'include'
     });
     
     // Vérifier si la requête a réussi
@@ -81,7 +82,8 @@ export const userApi = {
   login: (credentials: { email: string, password: string }) => 
     fetchApi<{ user: any, token: string }>('/login', {
       method: 'POST',
-      body: JSON.stringify(credentials)
+      body: JSON.stringify(credentials),
+      credentials: 'include'
     }),
   
   // Récupérer le profil d'un utilisateur
@@ -94,7 +96,7 @@ export const userApi = {
       method: 'PUT',
       body: JSON.stringify(data)
     }),
-  
+
   // Récupérer les statistiques d'un joueur
   getPlayerStats: (userId: number) => 
     fetchApi<{ stats: any }>(`/users/${userId}/stats`),

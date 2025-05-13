@@ -1,23 +1,15 @@
 import { renderLoginPage } from "./login";
 import { router } from '../router';
+import { authenticateUser } from "../auth";
 
 /**
  * Affiche la page des tournois
  * @param container - Élément HTML dans lequel afficher la page
  */
 export function renderTrainingPage(container: HTMLElement): void {
-    const userstr = localStorage.getItem('user');
-    if (!userstr) {
-        renderLoginPage(container);
-        return;
-    }
-
-    const JWTtoken = localStorage.getItem('authToken');
-    if (!JWTtoken) {
-        console.log('Problème avec la récupération du JWT token de l\'utilisateur');
-        renderLoginPage(container);
-        return;
-    }
+    const userstr = authenticateUser()
+    if(!userstr)
+        renderLoginPage(container)
 
     // Ajouter le contenu HTML de la page
     container.innerHTML = `
@@ -35,6 +27,7 @@ export function renderTrainingPage(container: HTMLElement): void {
     }
 
     // Initialiser la connexion WebSocket
+    return
     const ws = new WebSocket('ws://localhost:3000/ws/chat', JWTtoken);
 
     // Gérer les messages entrants
