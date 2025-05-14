@@ -80,7 +80,10 @@ export const userApi = {
   
   //deconnexion de l'utilisateur route cree pour pouvoir supprimer les cookies 
   logout: () =>
-    fetchApi<{user : any, }>('/logout'),
+    fetchApi<{user : any, }>('/logout',{
+      method: 'POST',
+      credentials: 'include',
+    }),
 
 
   // Connexion d'un utilisateur

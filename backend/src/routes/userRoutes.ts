@@ -167,6 +167,15 @@ export default async function userRoutes(fastify: FastifyInstance) {
       }
 
   })
+  fastify.post('/logout', async (request: FastifyRequest, reply: FastifyReply) => { 
+    reply.clearCookie('jwt', {
+      httpOnly: true,
+      secure: false, //process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',});
+      return reply.send({ message: 'Déconnexion réussie, cookie supprimé.' });
+  });
+
 
   // Route de connexion
   fastify.post('/login', async (request: FastifyRequest, reply: FastifyReply) => {
