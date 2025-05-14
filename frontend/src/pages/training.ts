@@ -6,11 +6,16 @@ import { authenticateUser } from "../auth";
  * Affiche la page des tournois
  * @param container - Élément HTML dans lequel afficher la page
  */
-export function renderTrainingPage(container: HTMLElement): void {
-    const userstr = authenticateUser()
-    if(!userstr)
-        renderLoginPage(container)
+export async function renderTrainingPage(container: HTMLElement): Promise<void> {
+    // const userstr = await authenticateUser()
+    // console.log(userstr)
+    // if(userstr === null)
+    // {
+    //     renderLoginPage(container)
+    //     return
+    // }
 
+    const JWTtoken = localStorage.getItem('jwt')
     // Ajouter le contenu HTML de la page
     container.innerHTML = `
     <h1 class="text-3xl font-bold mb-4">Messagerie</h1>
@@ -25,10 +30,17 @@ export function renderTrainingPage(container: HTMLElement): void {
         console.error("L'élément de messagerie est introuvable.");
         return;
     }
-
+    let ws: WebSocket | undefined;
     // Initialiser la connexion WebSocket
-    return
-    const ws = new WebSocket('ws://localhost:3000/ws/chat', JWTtoken);
+    try{
+        ws = new WebSocket('ws://localhost:3000/ws/chat', JWTtoken);
+    }
+    catch (err){
+        console.log("erreur initialisation websocket")
+        renderLoginPage(container)
+        return
+    }
+    
 
     // Gérer les messages entrants
     ws.onmessage = (event) => {
@@ -74,6 +86,7 @@ export function renderTrainingPage(container: HTMLElement): void {
     // Gérer les erreurs WebSocket
     ws.onerror = (error) => {
         console.error('Erreur WebSocket:', error);
+        router.navigate('/login')
     };
 
     // Gérer la fermeture de la connexion WebSocket

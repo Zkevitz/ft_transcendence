@@ -39,7 +39,6 @@ export interface UpdateUserData {
   password?: string;
   avatar_url?: string;
 }
-
 /**
  * Crée un nouvel utilisateur
  * @param userData - Données de l'utilisateur à créer

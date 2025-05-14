@@ -3,6 +3,7 @@ import fastifyCookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
 import jwt from '@fastify/jwt';
+import {authenticate} from './routes/userRoutes';
 
 // Configuration de l'environnement
 const PORT = process.env.PORT || 3000;
@@ -17,22 +18,7 @@ const server: FastifyInstance = Fastify({
 async function registerWebSocketRoutes(){
   const clients = new Set<import('ws').WebSocket>();
 
-server.get('/ws/chat', { websocket: true }, (connection, req) => {
-  // Authentifier via JWT (dans les headers ou URL query ?)
-  const token = req.headers['sec-websocket-protocol'];  
-  if (!token) {
-    connection.socket.close();
-    return;
-  }
-
-  try {
-    const user = server.jwt.verify(token.toString());
-    console.log(`Utilisateur connecté`);
-  } catch (err) {
-    console.log('JWT invalide');
-    connection.socket.close();
-    return;
-  }
+server.get('/ws/chat', {preHandler:[authenticate] , websocket: true }, (connection, req) => {
 
   clients.add(connection.socket);
 

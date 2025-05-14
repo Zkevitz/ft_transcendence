@@ -68,6 +68,24 @@ interface FriendRequest {
     friendId?: number;
   }
 }
+export async function authenticate(request : FastifyRequest, reply : FastifyReply){
+  const token = request.cookies.jwt;
+  console.log("VOICI MON PREHANDLER")
+  console.log(token)
+  if(!token)
+    return reply.status(401).send({message: "Token manquant dans les cookies"});
+  try{
+    const payload = await request.jwtVerify();
+    request.user = payload
+    //console.log(request)
+    console.log("jwt cookie encore valide, utilisateur : ", payload)
+     //peut etre une bonne idee de refresh le temp d'expiration des coockies
+  }
+  catch(err){
+    console.error("Erreur lors de la vérification du JWT:", err);
+    return reply.status(403).send({ message: "Token invalide ou expiré" });
+  }
+}
 
 /**
  * Enregistre les routes utilisateur dans l'application Fastify
@@ -75,25 +93,20 @@ interface FriendRequest {
  */
 export default async function userRoutes(fastify: FastifyInstance) {
   // Middleware pour vérifier l'authentification
-  const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      await request.jwtVerify();
-    } catch (err) {
-      reply.code(401).send({ error: 'Non authentifié' });
-    }
-  };
 
   fastify.addHook('onRequest', async(request, reply) => {
+    return
     const token = request.cookies.jwt;
     console.log("VOICI MON HOOOOK")
     console.log(token)
     if(!token)
-      return reply.status(401).send({message: "Token manquant dans les coockies"});
+      return reply.status(401).send({message: "Token manquant dans les cookies"});
     try{
-      await request.jwtVerify();
+      const payload = await request.jwtVerify();
+      request.user = payload
       //console.log(request)
-      console.log("jwt cookie encore valide")
-      return reply.send({message: "jwt cookie encore valide"}) //peut etre une bonne idee de refresh le temp d'expiration des coockies
+      console.log("jwt cookie encore valide, utilisateur : ", payload)
+       //peut etre une bonne idee de refresh le temp d'expiration des coockies
     }
     catch(err){
       console.error("Erreur lors de la vérification du JWT:", err);
@@ -140,14 +153,19 @@ export default async function userRoutes(fastify: FastifyInstance) {
   fastify.get('/auth/status', async(request: FastifyRequest, reply: FastifyReply) => {
       console.log("Tous les cookies reçus:", request.cookies);
       const token = request.cookies.jwt;
-      //console.log("allgoodhere");
+      if(!token)
+        return reply.status(401).send({message: "Token manquant dans les cookies"});
       console.log(token);
-      //console.log(request);
-
-      if(!token){
-        console.log("probleme avec la nouvelle route");
-        return reply.code(300).send({error: "probleme avec  la nouvelle route"})
+      try{
+        await request.jwtVerify();
+        return reply.status(200).send({message: "Token toujours valide"})
       }
+      catch(err)
+      {
+        console.error("Erreur lors de la vérification du JWT:", err);
+        return reply.status(403).send({ message: "Token invalide ou expiré" });
+      }
+
   })
 
   // Route de connexion

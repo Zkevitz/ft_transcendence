@@ -78,6 +78,11 @@ export const userApi = {
       body: JSON.stringify(userData)
     }),
   
+  //deconnexion de l'utilisateur route cree pour pouvoir supprimer les cookies 
+  logout: () =>
+    fetchApi<{user : any, }>('/logout'),
+
+
   // Connexion d'un utilisateur
   login: (credentials: { email: string, password: string }) => 
     fetchApi<{ user: any, token: string }>('/login', {

@@ -105,6 +105,8 @@ async function initApp() {
     });
     
     document.getElementById('logout-btn')?.addEventListener('click', () => {
+
+      userApi.logout()
       // Supprimer les informations d'authentification
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
