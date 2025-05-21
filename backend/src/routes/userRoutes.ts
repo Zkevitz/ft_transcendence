@@ -70,6 +70,8 @@ interface FriendRequest {
 }
 export async function authenticate(request : FastifyRequest, reply : FastifyReply){
   const token = request.cookies.jwt;
+  console.log("voici toutes les cookies ")
+  console.log(request.cookies)
   console.log("VOICI MON PREHANDLER")
   console.log(token)
   if(!token)
@@ -165,7 +167,6 @@ export default async function userRoutes(fastify: FastifyInstance) {
         console.error("Erreur lors de la vérification du JWT:", err);
         return reply.status(403).send({ message: "Token invalide ou expiré" });
       }
-
   })
   fastify.post('/logout', async (request: FastifyRequest, reply: FastifyReply) => { 
     reply.clearCookie('jwt', {
@@ -200,7 +201,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
         httpOnly: true,
         secure : false,//process.env.NODE_ENV === 'production',
         sameSite : 'strict',
-        maxAge: 3600000,
+        maxAge: 360000,
         path: '/'
       });
       console.log("JE SUIS LAAAAA")
@@ -211,7 +212,7 @@ export default async function userRoutes(fastify: FastifyInstance) {
   });
 
   // Route pour récupérer le profil de l'utilisateur connecté
-  fastify.get('/me', { onRequest: [authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.get('/me', { onRequest: [authenticate]}, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const userId = (request.user as any).id;
       

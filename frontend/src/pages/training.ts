@@ -14,8 +14,9 @@ export async function renderTrainingPage(container: HTMLElement): Promise<void> 
     //     renderLoginPage(container)
     //     return
     // }
-
-    const JWTtoken = localStorage.getItem('jwt')
+    const frontendcookie = document.cookie;
+    console.log("cookie from frontend:")
+    console.log(frontendcookie)
     // Ajouter le contenu HTML de la page
     container.innerHTML = `
     <h1 class="text-3xl font-bold mb-4">Messagerie</h1>
@@ -33,14 +34,14 @@ export async function renderTrainingPage(container: HTMLElement): Promise<void> 
     let ws: WebSocket | undefined;
     // Initialiser la connexion WebSocket
     try{
-        ws = new WebSocket('ws://localhost:3000/ws/chat', JWTtoken);
+        ws = new WebSocket('ws://localhost:3000/ws/chat');
     }
     catch (err){
         console.log("erreur initialisation websocket")
+        localStorage.removeItem('user')
         renderLoginPage(container)
         return
     }
-    
 
     // Gérer les messages entrants
     ws.onmessage = (event) => {
@@ -86,6 +87,7 @@ export async function renderTrainingPage(container: HTMLElement): Promise<void> 
     // Gérer les erreurs WebSocket
     ws.onerror = (error) => {
         console.error('Erreur WebSocket:', error);
+        localStorage.removeItem('user')
         router.navigate('/login')
     };
 
@@ -129,5 +131,34 @@ export async function renderTrainingPage(container: HTMLElement): Promise<void> 
         } else {
             console.log("Le message est vide.");
         }
+    });
+    messageInput.addEventListener('keydown', (event : KeyboardEvent) => {
+        if(event.key === 'Enter'){
+        console.log("Bouton d'envoi de message déclenché");
+
+        const message = messageInput.value;
+        if (message) {
+            console.log("Envoi du message :", message);
+            ws.send(message);
+            
+            // Afficher localement le message envoyé
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message-item message-sent';
+            
+            // Ajouter un préfixe pour indiquer que c'est votre message
+            messageElement.textContent = `Moi: ${message}`;
+            
+            // Ajouter l'élément dans le conteneur
+            if (MessagerieContainer) {
+                MessagerieContainer.appendChild(messageElement);
+                // Faire défiler automatiquement vers le bas
+                MessagerieContainer.scrollTop = MessagerieContainer.scrollHeight;
+            }
+            
+            messageInput.value = "";  // Réinitialiser le champ de message après envoi
+        } else {
+            console.log("Le message est vide.");
+        }
+    }
     });
 }
