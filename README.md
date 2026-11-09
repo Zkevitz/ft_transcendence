@@ -107,3 +107,7 @@ Toutes les routes sont préfixées par `/api`.
 | Amis     | `GET /friends/:id`, `POST /AddFriend/:id`, `POST /removeFriend/:id` |
 | Tournois | `GET /tournament/current/:type`, `POST /tournament/updateStatus` |
 | Temps réel | `WS /ws/game`, `WS /ws/chat`                                   |
+
+
+### S/o
+projet realisé en trio avec 2 autres etudiant de l'ecole 42
